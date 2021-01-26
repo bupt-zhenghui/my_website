@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WeChat Consumption</title>
+    <link href='../static/css/consumption.css' rel="stylesheet"/>
+    <link rel='shortcut icon' type='image/x-icon' href='../static/img/favicon.ico'/>
+    <script src="../static/js/jquery-3.5.1.js"></script>
+</head>
+<script>
+    function get_consumption(){
+        $.ajax({
+        url: '/get_consumption',
+        timeout: 10000,
+        success: function (data){
+            $('#main').html(data.data)
+        }
+    })
+    }
+
+    get_consumption()
+</script>
+<body>
+    <header id="header">
+        <div id="title">消费记录明细</div>
+    </header>
+
+    <section id="control">
+        <div id="control_list">
+            <a onclick="" target="_blank"><button class="info_btn">一周数据</button></a>&nbsp;
+            <a onclick="" target="_blank"><button class="info_btn">当月数据</button></a>&nbsp;
+            <a onclick="" target="_blank"><button class="info_btn">收入情况</button></a>&nbsp;
+            <a onclick="" target="_blank"><button class="info_btn">支出情况</button></a>&nbsp;
+            <a onclick="" target="_blank"><button class="info_btn">网购记录</button></a>&nbsp;
+        </div>
+    </section>
+
+    <section id="main">
+
+    </section>
+
+</body>
+</html>

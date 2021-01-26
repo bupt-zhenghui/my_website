@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href='../static/css/index.css' rel="stylesheet"/>
+    <link rel='shortcut icon' type='image/x-icon' href='../static/img/favicon.ico'/>
+    <script src="../static/js/jquery-3.5.1.js"></script>
+    <script src="http://pv.sohu.com/cityjson?ie=utf-8"></script>
+    <title>Z.H Wang BUPT</title>
+</head>
+<script>
+
+
+    var leetcode_page = 0
+    max_num = {{ leetcode_page }} - 1
+    function update_leetcode(idx) {
+        if (idx === 1){
+            leetcode_page += 1
+        } else if (idx === 0){
+            leetcode_page = idx
+        } else if (idx === -1){
+            leetcode_page -= 1
+        }
+        if (leetcode_page > max_num) {leetcode_page = max_num}
+        else if (leetcode_page < 0) {leetcode_page = 0}
+        const url = '/leetcode_page?page=' + leetcode_page;
+        $.ajax({
+            url: url,
+            timeout: 10000,
+            success: function (data){
+                $('#leetcode_content').html(data.data)
+            }
+        })
+    }
+
+
+    function get_time(){
+        $.ajax({
+        url: '/time',
+        timeout: 10000,
+        success: function (data){
+            $('#current_time').html(data)
+        }
+    })
+    }
+
+    function get_project(){
+        $('#project_label').html('近期项目')
+        $.ajax({
+            url: '/get_project',
+            timeout: 10000,
+            success: function (data){
+                const pro_list = data.data;
+                let res = '';
+                for (let i=0; i<pro_list.length; i++){
+                    res += '<li class="project_list">' + pro_list[i].name + '&nbsp;'
+                    if ('report' in pro_list[i]){
+                        res += '<a style="color:aqua" class="default" href=' + pro_list[i].report + '>[pdf]</a>'
+                    }
+                    if ('src_code' in pro_list[i]){
+                        res += '<a style="color:aqua" class="default" href=' + pro_list[i].src_code + '>[src_code]</a>'
+                    }
+                    res += '</li>'
+                }
+                $('#my_project').html('<ul>' + res + '</ul>')
+            }
+        })
+    }
+
+    function get_diary(){
+        $('#project_label').html('一些随笔')
+        $.ajax({
+            url: '/get_article',
+            timeout: 10000,
+            success: function (data){
+                $('#my_project').html(data.data)
+            }
+        })
+    }
+
+    function get_dataset(){
+        $('#project_label').html('资料下载')
+        $.ajax({
+            url: '/get_statistics',
+            timeout: 10000,
+            success: function (data){
+                $('#my_project').html(data.data)
+            }
+        })
+    }
+
+    function leave_msg(){
+        $('#project_label').html('留言板')
+        $.ajax({
+            url: '/msg_board',
+            timeout: 10000,
+            success: function (data){
+                $('#my_project').html(data.data)
+            }
+        })
+    }
+
+    function clear_msg(){
+        document.getElementById('msg').value = ''
+    }
+
+    function fetch_msg(){
+        var msg = document.getElementById('msg').value
+        if (msg == null || msg == ""){
+            alert("Invalid message!")
+        }
+        else {
+            alert("Success! Thanks for your advice!")
+            location.reload()
+            scroll(0, 0)
+            $.ajax({
+                url: '/get_msg?msg=' + msg,
+                timeout: 10000,
+                success: function () {
+                }
+            })
+        }
+    }
+
+    function get_cnt(){
+        var ip = returnCitySN["cip"] + ',' + returnCitySN["cname"]
+        $.ajax({
+            url: '/get_cnt?ip=' + ip,
+            timeout: 10000,
+            success: function (data){
+                $('#cnt').html(data.data)
+            }
+        })
+    }
+
+    get_cnt()
+    setInterval(get_time, 1000)
+    update_leetcode(0)
+    get_project()
+</script>
+
+<body>
+    <header id="header">
+        <a id="nice_logo" target="_blank">
+            <img style="width:100%;height:100%" src="../static/img/nice.jpg">
+        </a>
+        <a href="/to_log">
+            <button class="log_btn">维护日志</button>
+        </a>
+        <a href="../static/file/2020_Summary.pdf">
+            <button class="summary">2020年度总结</button>
+        </a>
+
+        <a class="default" id="bupt_logo" href="https://www.bupt.edu.cn" target="_blank">
+            <img style="width:100%;height:100%" src="../static/img/bupt_logo.png">
+        </a>
+        <img id="portrait" src="../static/img/touxiang.jpg"/>
+        <ul id="top_menu">
+            <li style="list-style:none;margin:0;padding:0"><a class="menu_label" href="/close">合作交流</a></li>
+            <li style="list-style:none;margin:0;padding:0"><a class="menu_label" href="/close">友情链接</a></li>
+            <li style="list-style:none;margin:0;padding:0"><a class="menu_label" href="/close">使用帮助</a></li>
+            <li style="list-style:none;margin:0;padding:0"><a class="menu_label" href="/close">意见建议</a></li>
+        </ul>
+        <div id="current_time">2020-10-24 06:47:30</div>
+    </header>
+    <aside id="left-side">
+        <div class="pure_label">&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;&nbsp;导航栏</div><br><br>
+        <ul style="padding:20px;top:50px">
+            {% for key, value in navi_dic.items() %}
+                <a href="{{ value }}" target="_blank"><li class="navi_bar">{{ key }}</li></a>
+            {% endfor %}
+        </ul>
+    </aside>
+    <section id="main">
+        <div id="my_img">
+            <img style="width:100%;height:100%;border-radius:10px" src="../static/img/my_img.jpg">
+        </div>
+        <div id="my_name">汪正徽 Z.H Wang</div>
+        <ul class="my_info">
+            <li>学历：本科生 大四在读（保研）</li>
+            <li>所在单位：北京邮电大学 国际学院</li>
+            <li>地址：北京市西土城路10号 北京邮电大学</li>
+            <li>电话：18055627612</li>
+            <li>邮箱：wangzhenghui@bupt.edu.cn</li>
+            <li>研究生单位：北邮人工智能学院 智能科学与技术系</li>
+            <li>研究生导师：
+            <a class="default" style="color:white"
+               href="https://teacher.bupt.edu.cn/ffx/zh_cn/index.htm" target="_blank">冯方向</a></li>
+            <li>简历下载：
+            <a class="default" style="color:white" href="static/file/cv.pdf" target="_blank">中文简历</a></li>
+        </ul>
+        <div id="link_list">
+            <a onclick="get_project()" target="_blank"><button class="info_btn">近期项目</button></a>&nbsp;
+            <a onclick="get_diary()" target="_blank"><button class="info_btn">一些随笔</button></a>&nbsp;
+            <a onclick="get_dataset()" target="_blank"><button class="info_btn">资料下载</button></a>&nbsp;
+            <a href="/to_consumption" target="_blank"><button class="info_btn">消费记录</button></a>&nbsp;
+            <a href="http://sky207.deepfashion.net:5555" target="_blank"><button class="info_btn">数据中台</button></a>&nbsp;
+            <a href="http://www.zhenghui.tech:39010" target="_blank"><button class="info_btn">疫情数据</button></a>&nbsp;
+            <a onclick="leave_msg()" target="_blank"><button class="info_btn">留言板</button></a>
+        </div>
+        <div id="my_resume">
+            &emsp;&emsp;北京邮电大学国际学院本科生（大四）、北邮叶培大实验班学生。研究方向：计算机视觉、多模态认知
+            计算、自然语言处理等。本科三年以来，陆续获得校级、市级、国家级大学生数学竞赛奖项，本科
+            前三年智育排名专业17/178，大学英语六级考试572分，所学6门数学类必修课程平均分93.7分，其中高等数学
+            97分，线性代数96分，运筹学96分。大二暑期参与MIT Machine Learning Summer Program，大三暑期在
+            北邮网络与交换技术国家重点实验室实习。2020.10保研至北京邮电大学人工智能学院智能科学与技术系。2020.11
+            加入北京好赞移动科技有限公司算法组实习。
+        </div>
+        <div id="project_label">近期项目</div>
+        <div id="my_project">
+            <textarea id="msg" class="msg_board" rows="12" cols="70">
+                Any useful advice would be appreciated!
+                You can leave your contact information if you want to~
+            </textarea>
+            <a onclick="clear_msg()"><button class="clear_btn">清空</button></a>
+            <button class="submit_btn" onclick="fetch_msg()">提交</button>
+        </div>
+
+    </section>
+    <aside id="right-side">
+        <div class="pure_label">&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;&nbsp;LeetCode</div><br><br>
+        <div id="leetcode_content">
+        <ul style="padding:0;margin-top:1.5rem;font-size:1rem">
+            {% for dic in leetcode_dic %}
+                {% if leetcode_page * 40 <= loop.index < 40 * leetcode_page + 40 %}
+                    <a href="https://leetcode-cn.com/problems/{{ dic.url }}" target="_blank">
+                        <li class="leetcode_list" style="color:{{ dic.difficulty }}">
+                            {% if dic.status %}
+                                <img style="width:1rem;height:1rem;top:1rem" src="../static/img/ac.png">
+                            {% else %}
+                                &emsp;&nbsp;
+                            {% endif %}
+                            {{ dic.id }}.&nbsp;{{ dic.title }}
+                        </li>
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        </div>
+        <a onclick="update_leetcode(1)" style="top:920px;right:10px" class="default" id="sign">
+            <img src="../static/img/small_right.png">
+       </a>
+        <a onclick="update_leetcode(-1)" style="top:920px;left:10px" class="default" id="sign">
+            <img src="../static/img/small_left.png">
+        </a>
+    </aside>
+    <section id="bottom">
+        © 2020 zhenghui.tech 版权所有 ICP证：
+        <a style="color:white;text-decoration:none" href="https://beian.miit.gov.cn/#/Integrated/index">
+            京ICP备2020037173号
+        </a>
+        &nbsp;&nbsp;
+        <a style="color:white;text-decoration:none" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802033918">
+            京网安备11010802033918号
+        </a>
+        &nbsp;
+        访问量：<div id="cnt"></div>
+    </section>
+</body>
+</html>
